@@ -85,6 +85,15 @@ public class RescueCenter {
             String location,
             int distanceKm) {
         // TODO Implement using TDD.
+        // mira si el id del dron es nulo
+        if (droneId == null) {
+            throw new IllegalArgumentException("El dron no existe.");
+        }
+
+        // mira si el dron no está registrado en el sistema
+        if (!drones.containsKey(droneId)) {
+            throw new IllegalArgumentException("El dron no existe.");
+        }
         return null;
     }
 
