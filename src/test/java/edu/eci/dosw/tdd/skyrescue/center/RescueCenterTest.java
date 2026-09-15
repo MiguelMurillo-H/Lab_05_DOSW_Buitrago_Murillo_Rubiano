@@ -33,4 +33,17 @@ class RescueCenterTest {
             assertNotNull(e.getMessage());
             }
     }
+
+    //RED
+    @Test 
+    void shouldThrowExceptionWhenCompletingNonExistentMission(){
+        RescueCenter center = new RescueCenter();
+
+        try{
+            center.completeMission("MISION-INEXISTENTE");
+            fail("Debería haber lanzado IllegalArgumentException porque la mision no existe");
+        } catch(IllegalArgumentException e){
+            assertNotNull(e.getMessage());
+        }
+    }
 }
