@@ -33,4 +33,11 @@ class RescueCenterTest {
             assertNotNull(e.getMessage());
             }
     }
+
+    @Test 
+    void shouldNotRegisterDroneWhenDroneIsNull(){
+        RescueCenter center = new RescueCenter();
+        boolean result = center.addDrone(null);
+        assertFalse(result);
+    }
 }
