@@ -116,8 +116,14 @@ public class RescueCenter {
      * @return completed mission.
      */
     public Mission completeMission(String missionId) {
-        // TODO Implement using TDD.
-        return null;
+        if (missionId == null){
+            throw new IllegalArgumentException("La mision no existe");
+        }
+
+        Mission mission = missions.stream().filter(m -> m.getId().equals(missionId))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("La mision no existe"));
+        
+        return mission;
     }
 
     public boolean addOperator(RescueOperator operator) {
