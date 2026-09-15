@@ -34,6 +34,19 @@ class RescueCenterTest {
             }
     }
 
+    @Test
+    void shouldThrowExceptionWhenCompletingNonExistentMission() {
+        RescueCenter center = new RescueCenter();
+
+        try {
+            center.completeMission("M-INEXISTENTE");
+            fail("Deberia haber lanzado IllegalArgumentException porque la mision no existe.");
+        } 
+        catch (IllegalArgumentException e) {
+            assertNotNull(e.getMessage());
+        }
+    }
+
     @Test 
     void shouldNotRegisterDroneWhenDroneIsNull(){
         RescueCenter center = new RescueCenter();

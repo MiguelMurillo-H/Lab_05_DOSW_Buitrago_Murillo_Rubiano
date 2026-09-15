@@ -117,7 +117,26 @@ public class RescueCenter {
      */
     public Mission completeMission(String missionId) {
         // TODO Implement using TDD.
-        return null;
+        // mira si el id de la mision es nulo
+        if (missionId == null) {
+            throw new IllegalArgumentException("La mision no existe");
+        }
+        // mira si el id de la mision es vacio
+        if (missionId.isBlank()) {
+            throw new IllegalArgumentException("La mision no existe");
+        }
+        // mira si la mision esta
+        for (Mission mission : missions) {
+            if (mission != null) {
+                if (mission.getId() != null) {
+                    if (mission.getId().equals(missionId)) {
+                        return mission;
+                    }
+                }
+            }
+        }
+        // si hace el ciclo y no esta la mision lanza la excepcion
+        throw new IllegalArgumentException("La mision no existe.");
     }
 
     public boolean addOperator(RescueOperator operator) {
