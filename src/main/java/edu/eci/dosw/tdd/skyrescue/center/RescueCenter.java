@@ -116,14 +116,14 @@ public class RescueCenter {
      * @return completed mission.
      */
     public Mission completeMission(String missionId) {
-        if (missionId == null){
-            throw new IllegalArgumentException("La mision no existe");
+        if (missionId == null || missionId.isBlank()) {
+            throw new IllegalArgumentException("La mision no existe.");
         }
 
-        Mission mission = missions.stream().filter(m -> m.getId().equals(missionId))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("La mision no existe"));
-        
-        return mission;
+        return missions.stream()
+                .filter(m -> m.getId().equals(missionId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("La mision no existe."));
     }
 
     public boolean addOperator(RescueOperator operator) {

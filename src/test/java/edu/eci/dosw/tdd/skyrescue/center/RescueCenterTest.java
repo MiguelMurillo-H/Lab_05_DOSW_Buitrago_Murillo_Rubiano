@@ -34,16 +34,23 @@ class RescueCenterTest {
             }
     }
 
-    //RED
-    @Test 
-    void shouldThrowExceptionWhenCompletingNonExistentMission(){
+    @Test
+    void shouldThrowExceptionWhenCompletingNonExistentMission() {
         RescueCenter center = new RescueCenter();
 
-        try{
-            center.completeMission("MISION-INEXISTENTE");
-            fail("Debería haber lanzado IllegalArgumentException porque la mision no existe");
-        } catch(IllegalArgumentException e){
+        try {
+            center.completeMission("M-INEXISTENTE");
+            fail("Deberia haber lanzado IllegalArgumentException porque la mision no existe.");
+        } 
+        catch (IllegalArgumentException e) {
             assertNotNull(e.getMessage());
         }
+    }
+
+    @Test 
+    void shouldNotRegisterDroneWhenDroneIsNull(){
+        RescueCenter center = new RescueCenter();
+        boolean result = center.addDrone(null);
+        assertFalse(result);
     }
 }
