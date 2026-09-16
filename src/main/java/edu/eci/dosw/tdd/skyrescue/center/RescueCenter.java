@@ -81,50 +81,38 @@ public class RescueCenter {
      * @return created mission.
      */
     public Mission assignMission(
-            String operatorId,
-            String droneId,
-            String location,
-            int distanceKm) {
-        // TODO Implement using TDD.
-        // mira si el id del dron es nulo
-        if (droneId == null) {
+        String operatorId,
+        String droneId,
+        String location,
+        int distanceKm) {
+
+        if (droneId == null || !drones.containsKey(droneId)) {
             throw new IllegalArgumentException("El dron no existe.");
         }
 
-        // mira si el dron no está registrado en el sistema
-        if (!drones.containsKey(droneId)) {
-            throw new IllegalArgumentException("El dron no existe.");
-        }
+        RescueOperator operator = operators.stream()
+                .filter(op -> op.getId().equals(operatorId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("El operador no existe."));
+
         Drone drone = drones.get(droneId);
-        drone.setAvailable(false);
-        //da el operador si existe
-        RescueOperator operator = null;
-        if (operators != null) {
-            if (operatorId != null) {
-                for (RescueOperator op : operators) {
-                    if (op != null) {
-                        if (op.getId() != null) {
-                            if (op.getId().equals(operatorId)) {
-                                operator = op;
-                            }
-                        }
-                    }
-                }
-            }
+
+        if (!drone.isAvailable()) {
+            throw new IllegalStateException("El dron ya esta ocupado.");
         }
 
-        // crea la mision
-        Mission mission = new Mission(
-            "M-" + System.currentTimeMillis(),
-            location,
-            distanceKm,
-            drone,
-            operator,
-            java.time.LocalDateTime.now(),
-            MissionStatus.ACTIVE
-        );
-        missions.add(mission);
-        return mission;
+        if (distanceKm <= 0 || distanceKm > drone.getMaxRangeKm()) {
+            throw new IllegalArgumentException("La distancia no es valida para este dron.");
+        }
+
+        boolean operatorHasActiveMission = missions.stream()
+                .anyMatch(m -> m.getOperator().getId().equals(operatorId)
+                        && m.getStatus() == MissionStatus.ACTIVE);
+
+        if (operatorHasActiveMission) {
+            throw new IllegalStateException("El operador ya tiene una mision activa.");
+        }
+        return null;
     }
 
     /**
