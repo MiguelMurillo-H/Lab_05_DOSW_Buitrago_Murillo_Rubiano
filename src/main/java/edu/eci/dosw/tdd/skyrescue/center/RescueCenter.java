@@ -146,14 +146,40 @@ public class RescueCenter {
      * @return completed mission.
      */
     public Mission completeMission(String missionId) {
-        if (missionId == null || missionId.isBlank()) {
+        if (missionId == null) {
             throw new IllegalArgumentException("La mision no existe.");
         }
+        if (missionId.isBlank()) {
+            throw new IllegalArgumentException("La mision no existe.");
+        }
+        Mission foundMission = null;
+        if (missions != null) {
+            for (Mission mission : missions) {
+                if (mission != null) {
+                    if (mission.getId() != null) {
+                        if (mission.getId().equals(missionId)) {
+                            foundMission = mission;
+                        }
+                    }
+                }
+            }
+        }
+        if (foundMission == null) {
+            throw new IllegalArgumentException("La mision no existe");
+        }
 
-        return missions.stream()
-                .filter(m -> m.getId().equals(missionId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("La mision no existe."));
+        foundMission.setStatus(MissionStatus.COMPLETED);
+        foundMission.setEndDate(java.time.LocalDateTime.now());
+
+        // libera el dron
+        if (drones != null) {
+            for (Drone drone : drones.values()) {
+                if (drone != null) {
+                    drone.setAvailable(true);
+                }
+            }
+        }
+        return foundMission;
     }
 
     public boolean addOperator(RescueOperator operator) {

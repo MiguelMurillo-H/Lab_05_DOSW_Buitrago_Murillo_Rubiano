@@ -84,9 +84,9 @@ class RescueCenterTest {
         Mission completedMission = center.completeMission(mission.getId());
 
         assertNotNull(completedMission);
-        assertEquals("COMPLETED", completedMission.getStatus());
+        assertEquals(edu.eci.dosw.tdd.skyrescue.mission.MissionStatus.COMPLETED, completedMission.getStatus());
         assertNotNull(completedMission.getEndDate());
         assertTrue(drone.isAvailable());
     }
-      
+
 }
