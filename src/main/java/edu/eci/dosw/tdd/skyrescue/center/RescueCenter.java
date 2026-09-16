@@ -206,16 +206,17 @@ public class RescueCenter {
             throw new IllegalArgumentException("La mision no existe");
         }
 
+        if(foundMission.getStatus() == MissionStatus.COMPLETED){
+            throw new IllegalStateException("La misión ya está completada");
+        }
+
         foundMission.setStatus(MissionStatus.COMPLETED);
         foundMission.setEndDate(java.time.LocalDateTime.now());
 
-        // libera el dron
-        if (drones != null) {
-            for (Drone drone : drones.values()) {
-                if (drone != null) {
-                    drone.setAvailable(true);
-                }
-            }
+        // libera el dron solo de esta mision, no todos
+        Drone assignedDrone = foundMission.getDrone();
+        if (assignedDrone != null) {
+            assignedDrone.setAvailable(true);
         }
         return foundMission;
     }

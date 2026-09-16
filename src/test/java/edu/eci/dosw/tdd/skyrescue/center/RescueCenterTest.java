@@ -88,4 +88,46 @@ class RescueCenterTest {
         assertNotNull(completedMission.getEndDate());
         assertTrue(drone.isAvailable());
     }
+
+    //RED
+    @Test
+    void shouldThrowExceptionWhenCompletingAlreadyCompletedMission(){
+        RescueCenter center = new RescueCenter();
+        Drone drone = new Drone("D-50", "Romeo", 100);
+        RescueOperator operator = new RescueOperator("OP-50", "Pedro");
+
+        center.addDrone(drone);
+        center.addOperator(operator);
+
+        Mission mission = center.assignMission("OP-50", "D-50", "Zona Central", 10);
+        center.completeMission(mission.getId());
+
+        try{
+            center.completeMission(mission.getId());
+            fail("Deberia haber lanzado IllegalStateException porque la mision ya está completada");
+        } catch(IllegalStateException e){
+            assertNotNull(e.getMessage());
+        }
+    }
+
+    @Test
+    void shouldNotAffectOtherActiveMissionWhenCompletinAMission(){
+        RescueCenter center = new RescueCenter();
+        Drone drone1 = new Drone("D-40", "Alpha", 50);
+        Drone drone2 = new Drone("D-41", "Beta", 50);
+        RescueOperator operator1 = new RescueOperator("OP-40", "Alex");
+        RescueOperator operator2 = new RescueOperator("OP-41", "Fabio");
+
+        center.addDrone(drone1);
+        center.addDrone(drone2);
+        center.addOperator(operator1);
+        center.addOperator(operator2);
+
+        Mission mission1 = center.assignMission("OP-40", "D-40", "Zona 1", 10);
+        Mission mission2 = center.assignMission("OP-41", "D-41", "Zona 2", 10);
+        center.completeMission(mission1.getId());
+
+        assertEquals(MissionStatus.ACTIVE, mission2.getStatus());
+        assertFalse(drone2.isAvailable());
+    }
 }
