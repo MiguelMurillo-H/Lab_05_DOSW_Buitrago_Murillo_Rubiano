@@ -2,6 +2,7 @@ package edu.eci.dosw.tdd.skyrescue.center;
 
 import edu.eci.dosw.tdd.skyrescue.drone.Drone;
 import edu.eci.dosw.tdd.skyrescue.mission.Mission;
+import edu.eci.dosw.tdd.skyrescue.mission.MissionStatus;
 import edu.eci.dosw.tdd.skyrescue.operator.RescueOperator;
 
 import java.util.ArrayList;
@@ -94,7 +95,36 @@ public class RescueCenter {
         if (!drones.containsKey(droneId)) {
             throw new IllegalArgumentException("El dron no existe.");
         }
-        return null;
+        Drone drone = drones.get(droneId);
+        drone.setAvailable(false);
+        //da el operador si existe
+        RescueOperator operator = null;
+        if (operators != null) {
+            if (operatorId != null) {
+                for (RescueOperator op : operators) {
+                    if (op != null) {
+                        if (op.getId() != null) {
+                            if (op.getId().equals(operatorId)) {
+                                operator = op;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // crea la mision
+        Mission mission = new Mission(
+            "M-" + System.currentTimeMillis(),
+            location,
+            distanceKm,
+            drone,
+            operator,
+            java.time.LocalDateTime.now(),
+            MissionStatus.ACTIVE
+        );
+        missions.add(mission);
+        return mission;
     }
 
     /**
