@@ -55,4 +55,37 @@ class RescueCenterTest {
         boolean result = center.addDrone(null);
         assertFalse(result);
     }
+    @Test
+    void shouldAssignMissionSuccessfullyWhenDataIsValid() {
+        RescueCenter center = new RescueCenter();
+        Drone drone = new Drone("D-10", "Phantom X", 50);
+        RescueOperator operator = new RescueOperator("OP-10", "Ana");
+        
+        center.addDrone(drone);
+        center.addOperator(operator);
+
+        Mission mission = center.assignMission("OP-10", "D-10", "Zona Sur", 20);
+
+        assertNotNull(mission);
+        assertEquals(MissionStatus.ACTIVE, mission.getStatus());
+        assertFalse(drone.isAvailable());
+    }
+
+    @Test
+    void shouldCompleteMissionSuccessfully() {
+        RescueCenter center = new RescueCenter();
+        Drone drone = new Drone("D-20", "Mavic", 100);
+        RescueOperator operator = new RescueOperator("OP-20", "Luis");
+        
+        center.addDrone(drone);
+        center.addOperator(operator);
+
+        Mission mission = center.assignMission("OP-20", "D-20", "Zona Este", 10);
+        Mission completedMission = center.completeMission(mission.getId());
+
+        assertNotNull(completedMission);
+        assertEquals(MissionStatus.COMPLETED, completedMission.getStatus());
+        assertNotNull(completedMission.getEndDate());
+        assertTrue(drone.isAvailable());
+    }
 }
