@@ -112,17 +112,7 @@ public class RescueCenter {
         if (operatorHasActiveMission) {
             throw new IllegalStateException("El operador ya tiene una mision activa.");
         }
-
-        Mission mission = new Mission(
-                "M-" + (missions.size() + 1),
-                location, distanceKm, drone, operator,
-                java.time.LocalDateTime.now(),
-                MissionStatus.ACTIVE);
-
-        drone.setAvailable(false);
-        missions.add(mission);
-
-        return mission;
+        return null;
     }
 
     /**
@@ -144,14 +134,40 @@ public class RescueCenter {
      * @return completed mission.
      */
     public Mission completeMission(String missionId) {
-        if (missionId == null || missionId.isBlank()) {
+        if (missionId == null) {
             throw new IllegalArgumentException("La mision no existe.");
         }
+        if (missionId.isBlank()) {
+            throw new IllegalArgumentException("La mision no existe.");
+        }
+        Mission foundMission = null;
+        if (missions != null) {
+            for (Mission mission : missions) {
+                if (mission != null) {
+                    if (mission.getId() != null) {
+                        if (mission.getId().equals(missionId)) {
+                            foundMission = mission;
+                        }
+                    }
+                }
+            }
+        }
+        if (foundMission == null) {
+            throw new IllegalArgumentException("La mision no existe");
+        }
 
-        return missions.stream()
-                .filter(m -> m.getId().equals(missionId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("La mision no existe."));
+        foundMission.setStatus(MissionStatus.COMPLETED);
+        foundMission.setEndDate(java.time.LocalDateTime.now());
+
+        // libera el dron
+        if (drones != null) {
+            for (Drone drone : drones.values()) {
+                if (drone != null) {
+                    drone.setAvailable(true);
+                }
+            }
+        }
+        return foundMission;
     }
 
     public boolean addOperator(RescueOperator operator) {
