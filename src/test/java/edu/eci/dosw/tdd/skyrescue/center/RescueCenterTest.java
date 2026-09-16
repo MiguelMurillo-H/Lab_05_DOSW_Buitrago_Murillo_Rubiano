@@ -1,6 +1,7 @@
 package edu.eci.dosw.tdd.skyrescue.center;
 
 import edu.eci.dosw.tdd.skyrescue.drone.Drone;
+import edu.eci.dosw.tdd.skyrescue.mission.Mission;
 import edu.eci.dosw.tdd.skyrescue.operator.RescueOperator;
 
 import org.junit.jupiter.api.Test;
@@ -53,4 +54,21 @@ class RescueCenterTest {
         boolean result = center.addDrone(null);
         assertFalse(result);
     }
+
+    @Test
+    void shouldAssignMissionSuccessfullyWhenDataIsValid() {
+        RescueCenter center = new RescueCenter();
+        Drone drone = new Drone("D-10", "Phantom X", 50);
+        RescueOperator operator = new RescueOperator("OP-10", "Ana");
+    
+        center.addDrone(drone);
+        center.addOperator(operator);
+
+        Mission mission = center.assignMission("OP-10", "D-10", "Zona Sur", 20);
+
+        assertNotNull(mission);
+        assertEquals("ACTIVE", mission.getStatus());
+        assertFalse(drone.isAvailable());
+    }
+    
 }
