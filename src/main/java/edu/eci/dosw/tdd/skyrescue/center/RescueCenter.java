@@ -86,14 +86,31 @@ public class RescueCenter {
         String location,
         int distanceKm) {
 
-        if (droneId == null || !drones.containsKey(droneId)) {
+        if (droneId == null) {
+            throw new IllegalArgumentException("El dron no existe.");
+        }
+        if (!drones.containsKey(droneId)) {
             throw new IllegalArgumentException("El dron no existe.");
         }
 
-        RescueOperator operator = operators.stream()
-                .filter(op -> op.getId().equals(operatorId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("El operador no existe."));
+        RescueOperator operator = null;
+        if (operators != null) {
+            if (operatorId != null) {
+                for (RescueOperator op : operators) {
+                    if (op != null) {
+                        if (op.getId() != null) {
+                            if (op.getId().equals(operatorId)) {
+                                operator = op;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (operator == null) {
+            throw new IllegalArgumentException("El operador no existe.");
+        }
 
         Drone drone = drones.get(droneId);
 
@@ -101,18 +118,51 @@ public class RescueCenter {
             throw new IllegalStateException("El dron ya esta ocupado.");
         }
 
-        if (distanceKm <= 0 || distanceKm > drone.getMaxRangeKm()) {
+        if (distanceKm <= 0) {
+            throw new IllegalArgumentException("La distancia no es valida para este dron.");
+        }
+        if (distanceKm > drone.getMaxRangeKm()) {
             throw new IllegalArgumentException("La distancia no es valida para este dron.");
         }
 
-        boolean operatorHasActiveMission = missions.stream()
-                .anyMatch(m -> m.getOperator().getId().equals(operatorId)
-                        && m.getStatus() == MissionStatus.ACTIVE);
+        // mira si ya tiene mision activa
+        boolean operatorHasActiveMission = false;
+        if (missions != null) {
+            for (Mission m : missions) {
+                if (m != null) {
+                    if (m.getOperator() != null) {
+                        if (m.getOperator().getId() != null) {
+                            if (m.getOperator().getId().equals(operatorId)) {
+                                if (m.getStatus() == MissionStatus.ACTIVE) {
+                                    operatorHasActiveMission = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         if (operatorHasActiveMission) {
             throw new IllegalStateException("El operador ya tiene una mision activa.");
         }
-        return null;
+
+        // Asignación estado
+        drone.setAvailable(false);
+
+        Mission mission = new Mission(
+            "M-" + System.currentTimeMillis(),
+            location,
+            distanceKm,
+            drone,
+            operator,
+            java.time.LocalDateTime.now(),
+            MissionStatus.ACTIVE
+        );
+
+        missions.add(mission);
+
+        return mission;
     }
 
     /**
