@@ -2,6 +2,7 @@ package edu.eci.dosw.tdd.skyrescue.center;
 
 import edu.eci.dosw.tdd.skyrescue.drone.Drone;
 import edu.eci.dosw.tdd.skyrescue.mission.Mission;
+import edu.eci.dosw.tdd.skyrescue.mission.MissionStatus;
 import edu.eci.dosw.tdd.skyrescue.operator.RescueOperator;
 
 import java.util.ArrayList;
@@ -84,17 +85,45 @@ public class RescueCenter {
             String droneId,
             String location,
             int distanceKm) {
-        // TODO Implement using TDD.
         // mira si el id del dron es nulo
-        if (droneId == null) {
+        if (droneId == null || !drones.containsKey(droneId)) {
             throw new IllegalArgumentException("El dron no existe.");
         }
 
-        // mira si el dron no está registrado en el sistema
-        if (!drones.containsKey(droneId)) {
-            throw new IllegalArgumentException("El dron no existe.");
+        if(operatorId == null || operators.stream().noneMatch(op -> op.getId().equals(operatorId))){
+            throw new IllegalArgumentException("El operador no existe");
         }
-        return null;
+
+        Drone drone = drones.get(droneId);
+
+        if(!drone.isAvailable()){
+            throw new IllegalStateException("El dron ya esta ocupado");
+        }
+
+        if(distanceKm <= 0 || distanceKm > drone.getMaxRangeKm()){
+            throw new IllegalArgumentException("La distancia no es valida para el dron");
+        }
+
+        boolean operatorHasActiveMission = missions.stream()
+            .anyMatch(m -> m.getOperator().getId().equals(operatorId)
+                    && m.getStatus() == MissionStatus.ACTIVE);
+
+        if(operatorHasActiveMission){
+            throw new IllegalStateException("El operador ya tiene una mision activa");
+        }
+
+        RescueOperator operator = operators.stream().filter(op -> op.getId().equals(operatorId)).findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("El operador no existe"));
+
+        Mission mission = new Mission("M-" + (missions.size() + 1)
+                ,location, distanceKm, drone, operator, 
+            java.time.LocalDateTime.now(), MissionStatus.ACTIVE);
+        
+        drone.setAvailable(false);
+        missions.add(mission);
+        
+        return mission;
+
     }
 
     /**
