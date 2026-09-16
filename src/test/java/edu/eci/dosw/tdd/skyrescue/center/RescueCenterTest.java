@@ -130,4 +130,21 @@ class RescueCenterTest {
         assertEquals(MissionStatus.ACTIVE, mission2.getStatus());
         assertFalse(drone2.isAvailable());
     }
+
+    @Test
+    void shouldThrowExceptionWhenDistanceExceedsDroneRange() {
+        RescueCenter center = new RescueCenter();
+        Drone drone = new Drone("D-50", "Phantom", 10);
+        RescueOperator operator = new RescueOperator("OP-50", "Julian");
+
+        center.addDrone(drone);
+        center.addOperator(operator);
+
+        try {
+            center.assignMission("OP-50", "D-50", "Zona Lejana", 20);
+            fail("Deberia haber lanzado IllegalArgumentException porque la distancia excede la autonomia del dron");
+        }catch (IllegalArgumentException e) {
+            assertNotNull(e.getMessage());
+        }
+    }
 }
