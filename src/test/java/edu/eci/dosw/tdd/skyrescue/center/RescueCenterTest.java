@@ -160,19 +160,66 @@ class RescueCenterTest {
             assertNotNull(e.getMessage());
         }
     }
-
     @Test
-    void shouldThrowExceptionWhenAssigningMissionToNonExistentOperator() {
+    void shouldThrowExceptionWhenOperatorAlreadyHasActiveMission() {
         RescueCenter center = new RescueCenter();
-        Drone drone = new Drone("D-60", "Phantom X", 30);
-        center.addDrone(drone);
+        Drone drone1 = new Drone("D-01", "Phantom", 50);
+        Drone drone2 = new Drone("D-02", "Mavic", 50);
+        RescueOperator operator = new RescueOperator("OP-01", "Carlos");
 
+        center.addDrone(drone1);
+        center.addDrone(drone2);
+        center.addOperator(operator);
+
+    // Asigna la primera misión activa exitosamente
+        center.assignMission("OP-01", "D-01", "Zona Norte", 10);
+
+    // Intento de asignar segunda misión activa al mismo operador
         try {
-            center.assignMission("OP-INEXISTENTE", "D-60", "Zona Norte", 10);
-            fail("Deberia haber lanzado IllegalArgumentException porque el operador no existe.");
-        } catch (IllegalArgumentException e) {
+            center.assignMission("OP-01", "D-02", "Zona Sur", 10);
+            fail("Deberia haber lanzado IllegalStateException por tener una mision activa.");
+        } 
+        catch (IllegalStateException e) {
             assertNotNull(e.getMessage());
         }
     }
 
+    @Test
+    void shouldThrowExceptionWhenDistanceExceedsMaxRange() {
+        RescueCenter center = new RescueCenter();
+        Drone drone = new Drone("D-01", "Phantom", 15);
+        RescueOperator operator = new RescueOperator("OP-01", "Carlos");
+
+        center.addDrone(drone);
+        center.addOperator(operator);
+
+        try {
+            center.assignMission("OP-01", "D-01", "Zona Norte", 100);
+            fail("Deberia haber lanzado IllegalArgumentException por exceder el rango maximo.");
+        } 
+        catch (IllegalArgumentException e) {
+            assertNotNull(e.getMessage());
+        }
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAssigningToOccupiedDrone() {
+        RescueCenter center = new RescueCenter();
+        Drone drone = new Drone("D-01", "Phantom", 50);
+        RescueOperator operator1 = new RescueOperator("OP-01", "Carlos");
+        RescueOperator operator2 = new RescueOperator("OP-02", "Ana");
+
+        center.addDrone(drone);
+        center.addOperator(operator1);
+        center.addOperator(operator2);
+
+        center.assignMission("OP-01", "D-01", "Zona Norte", 10);
+
+        try {
+            center.assignMission("OP-02", "D-01", "Zona Sur", 10);
+            fail("Deberia haber lanzado IllegalStateException por dron ocupado.");
+        } catch (IllegalStateException e) {
+            assertNotNull(e.getMessage());
+        }
+    }
 }
