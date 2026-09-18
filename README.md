@@ -39,3 +39,28 @@ Las tres operaciones desarrolladas con TDD son: addDrone (registro de drones val
 
 ### SonarQube
 
+(<img width="777" height="148" alt="image" src="https://github.com/user-attachments/assets/33f22b59-264a-470b-a18f-4e1421f11689" />)
+
+## Pull Requests
+
+- PR JUnit: [#1](https://github.com/MiguelMurillo-H/Lab_05_DOSW_Buitrago_Murillo_Rubiano/pull/1)
+- PR clases base: [#2](https://github.com/MiguelMurillo-H/Lab_05_DOSW_Buitrago_Murillo_Rubiano/pull/2)
+- PR TDD addDrone: [#3](https://github.com/MiguelMurillo-H/Lab_05_DOSW_Buitrago_Murillo_Rubiano/pull/3) · cobertura completa: [#13](https://github.com/MiguelMurillo-H/Lab_05_DOSW_Buitrago_Murillo_Rubiano/pull/13)
+- PR TDD assignMission: [#4](https://github.com/MiguelMurillo-H/Lab_05_DOSW_Buitrago_Murillo_Rubiano/pull/4) · dron ocupado: [#8](https://github.com/MiguelMurillo-H/Lab_05_DOSW_Buitrago_Murillo_Rubiano/pull/8) · distancia/autonomía: [#12](https://github.com/MiguelMurillo-H/Lab_05_DOSW_Buitrago_Murillo_Rubiano/pull/12) · operador inexistente/misión activa: [#14](https://github.com/MiguelMurillo-H/Lab_05_DOSW_Buitrago_Murillo_Rubiano/pull/14)
+- PR TDD completeMission: [#6](https://github.com/MiguelMurillo-H/Lab_05_DOSW_Buitrago_Murillo_Rubiano/pull/6) · misión inexistente: [#7](https://github.com/MiguelMurillo-H/Lab_05_DOSW_Buitrago_Murillo_Rubiano/pull/7) · doble cierre: [#11](https://github.com/MiguelMurillo-H/Lab_05_DOSW_Buitrago_Murillo_Rubiano/pull/11)
+- PR JaCoCo: [#15](https://github.com/MiguelMurillo-H/Lab_05_DOSW_Buitrago_Murillo_Rubiano/pull/15) · cobertura Drone: [#16](https://github.com/MiguelMurillo-H/Lab_05_DOSW_Buitrago_Murillo_Rubiano/pull/16)
+- PR SonarQube: [#17](https://github.com/MiguelMurillo-H/Lab_05_DOSW_Buitrago_Murillo_Rubiano/pull/17)
+
+## Reflexión técnica
+
+**1. ¿Qué error o comportamiento inesperado fue detectado primero gracias a una prueba?**
+El primer test de `addDrone` (`shouldRegisterDroneWhenDataIsValid`) evidenció que el método retornaba `false` incluso con datos válidos, ya que la lógica todavía no estaba implementada (`// TODO`). Esto confirmó el ciclo RED esperado antes de escribir la implementación mínima.
+
+**2. ¿Qué parte del código cambió durante REFACTOR sin modificar el comportamiento?**
+En `addDrone`, la cadena de validaciones (`drone == null`, `id == null`, `id.isBlank()`, `id` duplicado) se reorganizó usando `if / else if` encadenados en lugar de validaciones anidadas, mejorando la legibilidad sin alterar el resultado de ningún caso de prueba existente.
+
+**3. ¿Qué casos adicionales aparecieron al revisar la cobertura?**
+Al revisar el reporte de JaCoCo se detectó que la clase `Drone` no alcanzaba el umbral mínimo de cobertura (85%), por lo que se agregaron pruebas unitarias adicionales específicas para esa clase (PR #16), cubriendo comportamientos que no estaban siendo ejercitados por los tests de `RescueCenter`.
+
+**4. ¿Qué hallazgo de SonarQube produjo un cambio real en el código?**
+SonarQube reportó un issue de confiabilidad (Reliability) indicando que podía lanzarse un `NullPointerException` porque el campo `missions` era nullable en cierto punto del código. Este hallazgo llevó a corregir la validación correspondiente (PR #17).
