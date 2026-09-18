@@ -30,14 +30,11 @@ public class RescueCenter {
     public boolean addDrone(Drone drone) {
         if (drone == null) {
             return false;
-        }
-        else if (drone.getId() == null) {
+        } else if (drone.getId() == null) {
             return false;
-        }
-        else if (drone.getId().isBlank()) {
+        } else if (drone.getId().isBlank()) {
             return false;
-        }
-        else if (drones.containsKey(drone.getId())) {
+        } else if (drones.containsKey(drone.getId())) {
             return false;
         }
         else {
